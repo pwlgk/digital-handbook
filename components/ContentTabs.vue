@@ -1,8 +1,8 @@
 <!-- components/ContentTabs.vue -->
 <template>
-  <div v-if="siblings && siblings.length > 1" class="content-tabs">
+  <div v-if="tabsData?.showTabs && tabsData.siblings.length > 1" class="content-tabs">
     <NuxtLink 
-      v-for="tab in siblings" 
+      v-for="tab in tabsData.siblings" 
       :key="tab._path" 
       :to="tab._path" 
       class="tab-link"
@@ -13,30 +13,39 @@
 </template>
 
 <script setup>
-import { computed } from 'vue';
 const { path } = useRoute();
+const { data: tabsData } = await useAsyncData(`tabs-data-${path}`, async () => {
+  // 1. Определяем путь к родительской директории
+  const parentPath = path.substring(0, path.lastIndexOf('/'));
+  if (!parentPath) return { showTabs: false, siblings: [] };
 
-const isNestedRoute = path.split('/').filter(Boolean).length > 1;
+  // 2. Ищем метаданные родительской папки (_dir.yml)
+  // ИЩЕМ ВНУТРИ ДИРЕКТОРИИ, А НЕ ТОЛЬКО САМУ ДИРЕКТОРИЮ
+  const parentDir = await queryContent(parentPath).where({ _path: `${parentPath}/_dir` }).only(['tabs']).findOne();
 
-const { data: siblings } = await useAsyncData(`tabs-${path}`, async () => {
-  if (isNestedRoute) {
-    const parentPath = path.substring(0, path.lastIndexOf('/'));
-    
-    // Находим все страницы в директории
-    const pages = await queryContent(parentPath)
-      .only(['_path', 'title'])
-      .find();
-
-    // --- КЛЮЧЕВОЕ ИЗМЕНЕНИЕ ЗДЕСЬ ---
-    // Фильтруем результат, чтобы убрать саму родительскую папку (_dir.yml)
-    return pages.filter(page => !page._path.endsWith('/_dir'));
+  // 3. Проверяем флаг.
+  const showTabs = parentDir?.tabs === true;
+  if (!showTabs) {
+    return { showTabs: false, siblings: [] };
   }
-  return null;
+  
+  // 4. Ищем соседние страницы
+  const siblings = await queryContent(parentPath)
+    .only(['_path', 'title'])
+    .where({ _path: { $not: /_dir$/ } })
+    .find();
+
+  // Добавим проверку: показывать табы, только если страниц 2 или больше
+  if (siblings.length < 2) {
+    return { showTabs: false, siblings: [] };
+  }
+
+  return { showTabs: true, siblings };
 });
 
 function getTabTitle(title) {
   if (!title) return '';
-  return title.replace(/^\d+\.\s*/, '');
+  return title.replace(/^\d+(\.\d+)*\.\s*/, '');
 }
 </script>
 

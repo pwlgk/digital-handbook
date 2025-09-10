@@ -1,83 +1,207 @@
 <!-- layouts/default.vue -->
 <template>
-  <div class="app-layout">
+  <div class="app-layout" :class="{ 'sidebar-open': isSidebarOpen }">
+    <!-- Оверлей для затемнения контента при открытом сайдбаре на мобильных -->
+    <div class="sidebar-overlay" @click="toggleSidebar"></div>
+    
+    <!-- Боковая панель -->
     <aside class="sidebar">
       <div class="sidebar-header">
         <h3>Содержание</h3>
         <ThemeSwitcher />
       </div>
-      
-      <ContentNavigation v-slot="{ navigation }">
-        <RecursiveNav :links="navigation" />
-      </ContentNavigation>
-
+      <nav @click="closeSidebarOnMobile">
+        <ContentNavigation v-slot="{ navigation }">
+          <RecursiveNav :links="navigation" />
+        </ContentNavigation>
+      </nav>
     </aside>
-    <main class="main-content">
-      <slot />
-    </main>
+
+    <!-- Объединяем шапку и контент в один блок -->
+    <div class="main-container">
+      <!-- Мобильная шапка -->
+      <header class="mobile-header">
+        <button class="mobile-nav-toggle" @click="toggleSidebar">
+          <span></span><span></span><span></span>
+        </button>
+        <span class="header-title">{{ pageTitle }}</span>
+      </header>
+
+      <!-- Основной контент -->
+      <main class="main-content">
+        <slot />
+      </main>
+    </div>
   </div>
 </template>
 
+<script setup>
+import { ref } from 'vue';
+import { usePageTitle } from '~/composables/states';
+
+const isSidebarOpen = ref(false);
+
+// Мы просто читаем заголовок из глобального хранилища. Больше ничего не нужно.
+const pageTitle = usePageTitle();
+
+function toggleSidebar() {
+  isSidebarOpen.value = !isSidebarOpen.value;
+}
+
+function closeSidebarOnMobile() {
+  if (window.innerWidth < 992) {
+    isSidebarOpen.value = false;
+  }
+}
+</script>
+
 <style scoped>
+/* --- ОБЩИЕ СТИЛИ ЛАЙАУТА --- */
 .app-layout {
   display: flex;
-  min-height: 100vh;
+  position: relative;
 }
+
+/* --- САЙДБАР --- */
 .sidebar {
-  width: 280px;
+  width: 320px; /* Увеличена ширина */
   flex-shrink: 0;
-  padding: 2rem;
+  padding: 1.5rem;
   border-right: 1px solid var(--border-color);
   background-color: var(--bg-color-soft);
-  transition: border-color 0.3s, background-color 0.3s;
+  transition: transform 0.3s ease-in-out;
+  position: fixed;
+  left: 0;
+  top: 0;
+  height: 100%;
+  overflow-y: auto;
+  z-index: 1000;
+  box-sizing: border-box;
+
+  /* Скрываем скроллбар */
+  -ms-overflow-style: none;  /* IE и Edge */
+  scrollbar-width: none;  /* Firefox */
 }
+.sidebar::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
+
 .sidebar-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 1rem;
 }
+
 .sidebar h3 {
   margin: 0;
   color: var(--heading-color);
 }
-.sidebar ul {
-  list-style: none;
-  padding: 0;
-  margin: 0;
+
+nav {
+  margin-top: 1rem;
 }
-.sidebar ul ul {
-  padding-left: 1rem;
-}
-.sidebar li {
-  margin: 0.5rem 0;
-}
-.sidebar a {
-  text-decoration: none;
-  color: var(--text-color-light);
-  font-weight: 500;
-  display: block;
-  padding: 4px 8px;
-  border-radius: 6px;
-  transition: color 0.2s, background-color 0.2s;
-}
-.sidebar a:hover {
-  color: var(--text-color);
-}
-.sidebar a.router-link-exact-active {
-  background-color: var(--link-color);
-  color: white;
-}
-html.dark .sidebar a.router-link-exact-active {
-  color: var(--heading-color);
+
+/* --- КОНТЕЙНЕР ДЛЯ ШАПКИ И КОНТЕНТА --- */
+.main-container {
+  flex-grow: 1;
+  margin-left: 320px; /* Обновлен отступ под новую ширину сайдбара */
+  width: calc(100% - 320px);
 }
 
 .main-content {
-  flex-grow: 1;
-  padding: 2rem 4rem;
+  padding: 2rem;
 }
-/* Обертка для контента, чтобы ограничить ширину текста для читабельности */
-:deep(.prose) {
-  max-width: 80ch;
+
+/* --- МОБИЛЬНАЯ ШАПКА --- */
+.mobile-header {
+  display: none;
+  position: sticky;
+  top: 0;
+  z-index: 998;
+  padding: 0 1rem;
+  height: 60px;
+  background-color: var(--bg-color);
+  border-bottom: 1px solid var(--border-color);
+  align-items: center;
+  gap: 1rem;
+}
+
+.header-title {
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mobile-nav-toggle {
+  background: transparent;
+  border: none;
+  width: 44px;
+  height: 44px;
+  padding: 8px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.mobile-nav-toggle span {
+  display: block;
+  width: 24px;
+  height: 2px;
+  background-color: var(--text-color);
+  margin: 5px 0;
+  transition: transform 0.3s, opacity 0.3s;
+}
+
+.sidebar-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 999;
+}
+
+/* --- МЕДИА-ЗАПРОС ДЛЯ АДАПТИВНОСТИ --- */
+@media (max-width: 992px) {
+  .sidebar {
+    transform: translateX(-100%);
+  }
+  
+  .main-container {
+    width: 100%;
+    margin-left: 0;
+  }
+  
+  .main-content {
+    padding: 1.5rem;
+  }
+  
+  .mobile-header {
+    display: flex;
+  }
+
+  /* Стили для открытого сайдбара */
+  .app-layout.sidebar-open .sidebar {
+    transform: translateX(0);
+    box-shadow: 2px 0 15px rgba(0,0,0,0.1);
+  }
+
+  .app-layout.sidebar-open .sidebar-overlay {
+    display: block;
+  }
+
+  /* Анимация "крестика" для бургера */
+  .app-layout.sidebar-open .mobile-nav-toggle span:nth-child(1) {
+    transform: translateY(7px) rotate(45deg);
+  }
+  .app-layout.sidebar-open .mobile-nav-toggle span:nth-child(2) {
+    opacity: 0;
+  }
+  .app-layout.sidebar-open .mobile-nav-toggle span:nth-child(3) {
+    transform: translateY(-7px) rotate(-45deg);
+  }
 }
 </style>
