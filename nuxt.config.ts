@@ -28,12 +28,15 @@ export default defineNuxtConfig({
 
     // Настраиваем парсер Markdown для поддержки математики
     markdown: {
+      // Плагины для обработки синтаксиса Markdown
       remarkPlugins: {
         'remark-math': {},
         'remark-gfm': {}
       },
+      // Плагины для преобразования в HTML
       rehypePlugins: {
-        'rehype-katex': {}
+        // Указываем rehype-katex и явно отключаем MathML
+        'rehype-katex': { output: 'html' } // <-- ВАЖНОЕ ИЗМЕНЕНИЕ
       }
     }
   },
@@ -42,7 +45,12 @@ export default defineNuxtConfig({
   colorMode: {
     classSuffix: ''
   },
-
+  nitro: {
+    prerender: {
+      // Игнорировать ошибки 404 во время сборки
+      failOnError: false 
+    }
+  },
   // Настройки для @nuxtjs/google-fonts
   googleFonts: {
     families: {

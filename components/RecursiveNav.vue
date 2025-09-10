@@ -2,23 +2,38 @@
 <template>
   <ul class="nav-list">
     <li v-for="link in links" :key="link._path" class="nav-item">
-      <NuxtLink :to="resolveLink(link)" class="nav-link">
+      <NuxtLink :to="resolveLink(link)" class="nav-link" :class="{ 'is-active-parent': isParentActive(link) }">
         <span class="title">{{ getTrimmedTitle(link.title) }}</span>
-        <!-- Показываем иконку, если есть дочерние элементы -->
-        <span v-if="link.children" class="chevron">›</span>
+        <span v-if="link.children" class="chevron" :class="{ 'is-open': isParentActive(link) }">›</span>
       </NuxtLink>
-      <RecursiveNav v-if="link.children" :links="link.children" />
+      
+      <!-- Показываем дочерние элементы только если текущая ветка активна -->
+      <RecursiveNav v-if="link.children && isParentActive(link)" :links="link.children" />
     </li>
   </ul>
 </template>
 
 <script setup>
-defineProps({
+const route = useRoute();
+
+const props = defineProps({
   links: {
     type: Array,
     default: () => []
   }
 });
+
+/**
+ * Проверяет, является ли текущий маршрут или один из его дочерних элементов активным.
+ * @param {object} link - Объект навигационной ссылки
+ */
+function isParentActive(link) {
+  if (!link.children) {
+    return false;
+  }
+  // Проверяем, начинается ли текущий URL с пути этой папки
+  return route.path.startsWith(link._path);
+}
 
 function resolveLink(link) {
   if (link.children && link.children.length > 0) {
@@ -34,7 +49,6 @@ function findFirstChildPath(link) {
   return link._path;
 }
 
-// Новая функция для очистки заголовка от префиксов
 function getTrimmedTitle(title) {
   if (!title) return '';
   return title.replace(/^\d+(\.\d+)*\.\s*/, '');
@@ -47,11 +61,9 @@ function getTrimmedTitle(title) {
   padding: 0;
   margin: 0;
 }
-
 .nav-list .nav-list {
   padding-left: 12px;
   margin-left: 12px;
-  /* Более светлая и тонкая линия-индикатор */
   border-left: 1px solid rgba(128, 128, 128, 0.2);
 }
 
@@ -68,22 +80,25 @@ function getTrimmedTitle(title) {
   text-decoration: none;
   color: var(--text-color-light);
   font-weight: 500;
-  transition: color 0.2s, background-color 0.2s;
+  transition: color 0.2s, background-color 0.2s, font-weight 0.2s;
 }
 
 .nav-link:hover {
-  /* При наведении меняем цвет текста на основной */
   color: var(--text-color);
   background-color: var(--bg-color-soft);
 }
 
-/* Стили для активной ссылки - теперь без фона */
+/* Активная ссылка (конечная страница) */
 .nav-link.router-link-exact-active {
   color: var(--link-color);
-  font-weight: 700; /* Делаем шрифт жирнее */
-  background-color: transparent; /* Убираем фон */
+  font-weight: 700;
+  background-color: transparent;
 }
-/* В темной теме тоже убираем специальный цвет текста для активной ссылки */
+/* Активный родитель (раскрытая папка) */
+.nav-link.is-active-parent {
+  color: var(--heading-color);
+  font-weight: 600;
+}
 html.dark .nav-link.router-link-exact-active {
   color: var(--link-color);
 }
@@ -96,7 +111,11 @@ html.dark .nav-link.router-link-exact-active {
   font-size: 1.2rem;
   font-weight: bold;
   color: var(--text-color-light);
-  opacity: 0.5;
-  margin-left: 8px;
+  transition: transform 0.3s;
+  transform: rotate(0deg); /* Начальное положение */
+}
+/* Поворачиваем шеврон для открытой папки */
+.chevron.is-open {
+  transform: rotate(90deg);
 }
 </style>
