@@ -54,19 +54,37 @@ function getTabTitle(title) {
   display: flex;
   border-bottom: 2px solid var(--border-color);
   margin-bottom: 2rem;
+  
+  /* --- КЛЮЧЕВЫЕ ИЗМЕНЕНИЯ ЗДЕСЬ --- */
+  overflow-x: auto; /* Добавляем горизонтальный скролл */
+  white-space: nowrap; /* Запрещаем перенос вкладок на новую строку */
+  
+  /* Скрываем скроллбар для чистоты */
+  -ms-overflow-style: none;  /* IE и Edge */
+  scrollbar-width: none;  /* Firefox */
 }
+/* Скрываем скроллбар для Chrome, Safari и Opera */
+.content-tabs::-webkit-scrollbar {
+  display: none;
+}
+
 .tab-link {
   padding: 10px 20px;
   text-decoration: none;
   color: var(--text-color-light);
   font-weight: 500;
   border-bottom: 2px solid transparent;
-  margin-bottom: -2px; /* чтобы нижняя граница активной ссылки перекрывала общую */
+  margin-bottom: -2px;
   transition: color 0.2s, border-color 0.2s;
+  
+  /* Важно, чтобы вкладки не сжимались */
+  flex-shrink: 0;
 }
+
 .tab-link:hover {
   color: var(--text-color);
 }
+
 .tab-link.router-link-exact-active {
   color: var(--link-color);
   border-bottom-color: var(--link-color);

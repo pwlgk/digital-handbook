@@ -45,12 +45,17 @@ export default defineNuxtConfig({
   colorMode: {
     classSuffix: ''
   },
+  generate: {
+    // Исключаем маршрут /sandbox из финальной статической сборки
+    exclude: ['/sandbox']
+  },
   nitro: {
     prerender: {
       // Игнорировать ошибки 404 во время сборки
       failOnError: false 
     }
   },
+
   // Настройки для @nuxtjs/google-fonts
   googleFonts: {
     families: {

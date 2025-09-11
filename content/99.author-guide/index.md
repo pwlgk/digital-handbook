@@ -19,7 +19,7 @@ description: 'Правила и технологии для создания и 
 Для управления порядком глав и страниц в навигации используются **числовые префиксы** в именах файлов и папок.
 
 **Пример:**
-```
+```bash
 content/
 ├── 01.introduction.md              # Будет первым в списке
 ├── 02.guidelines.md                # Будет вторым
@@ -152,5 +152,20 @@ ENDFOR
     npm run dev
     ```
 3.  Откройте в браузере адрес `http://localhost:3000`.
+## Примеры
+::DownloadLink{url="/downloads/author-guide/test.txt" type="TXT"}
+  Скачать шаблон отчета
+::
 
+:ProseImg{src="/images/autho-guide/schema.png" alt="Схема 1"}
+
+::ProseImg{src="/images/autho-guide/schema.png" alt="Схема 1"}
+#caption
+*Рис. 1. Блок-схема алгоритма*
+::
+
+::ProseImg{src="/images/autho-guide/schema.png" alt="Схема 1" lightbox}
+#caption
+*Рис. 1. Блок-схема алгоритма. Нажмите, чтобы увеличить.*
+::
 ---

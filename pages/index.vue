@@ -1,76 +1,66 @@
 <!-- pages/index.vue -->
 <template>
-  <div class="prose">
-    <h1>Добро пожаловать в электронную библиотеку</h1>
+  <div class="prose home-page">
+    <h1>Добро пожаловать в электронное пособие</h1>
+    <p class="subtitle">
+      Этот интерактивный ресурс предназначен для изучения курса "Информатика".
+      Он содержит теоретические материалы, примеры решения задач и задания для самостоятельной работы.
+    </p>
+    
     <p>
-      Это центральная страница, предоставляющая доступ ко всем учебным материалам.
-      Пожалуйста, выберите интересующее вас пособие в меню навигации слева.
+      Для навигации по главам и разделам используйте меню слева.
+      Чтобы начать, перейдите к первому разделу.
     </p>
 
-    <hr>
-
-    <h2>Доступные пособия:</h2>
-    
-    <!-- 
-      Этот компонент автоматически сгенерирует список ссылок
-      на корневые разделы вашего контента.
-    -->
-    <ContentList path="/" v-slot="{ list }">
-      <ul class="course-list">
-        <li v-for="course in list" :key="course._path">
-          <NuxtLink :to="course._path">
-            <h3>{{ course.title }}</h3>
-            <p v-if="course.description">{{ course.description }}</p>
-          </NuxtLink>
-        </li>
-      </ul>
-    </ContentList>
+    <div class="start-button-container">
+      <NuxtLink to="/handbook_of_computer_science/title_page" class="start-button">
+        Начать обучение
+      </NuxtLink>
+    </div>
 
   </div>
 </template>
 
 <script setup>
-// Устанавливаем заголовок для этой конкретной страницы
 import { usePageTitle } from '~/composables/states';
 const pageTitle = usePageTitle();
 pageTitle.value = 'Главная страница';
 </script>
-
 <style scoped>
-.course-list {
-  list-style: none;
-  padding: 0;
-  margin-top: 2rem;
+.home-page {
+  max-width: 70ch;
+  margin: 4rem auto;
+  text-align: center;
 }
-.course-list li {
-  margin-bottom: 1.5rem;
-}
-.course-list li a {
-  display: block;
-  padding: 1.5rem;
-  border: 1px solid var(--border-color);
-  border-radius: 12px;
-  text-decoration: none;
-  transition: all 0.2s ease;
-}
-.course-list li a:hover {
-  border-color: var(--link-color);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-}
-html.dark .course-list li a:hover {
-  box-shadow: 0 4px 20px rgba(0,0,0,0.2);
-}
-.course-list h3 {
-  margin: 0 0 0.5rem 0;
-  color: var(--link-color);
-  font-size: 1.25rem;
-  border: none;
-  padding: 0;
-}
-.course-list p {
-  margin: 0;
+
+.subtitle {
+  font-size: 1.15rem;
   color: var(--text-color-light);
-  font-size: 1rem;
+  margin-top: 1rem;
+  margin-bottom: 2rem;
+}
+
+.start-button-container {
+  margin-top: 3rem;
+}
+
+.start-button {
+  display: inline-block;
+  padding: 12px 28px;
+  background-color: var(--link-color);
+  color: white;
+  font-weight: 600;
+  font-size: 1.1rem;
+  text-decoration: none;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 15px rgba(109, 40, 217, 0.2);
+}
+
+.start-button:hover {
+  transform: translateY(-2px);
+  background-color: var(--link-hover-color);
+  box-shadow: 0 6px 20px rgba(109, 40, 217, 0.3);
+  color: white; /* Гарантируем, что текст останется белым */
 }
 </style>
