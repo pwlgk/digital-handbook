@@ -31,6 +31,13 @@
       <main class="main-content">
         <slot />
       </main>
+      <footer class="main-footer">
+        <div class="footer-content">
+          <p>© 2025. Все права защищены. Разработка платформы – <a href="https://github.com/pwlgk" target="_blank">P.Geiko</a>.</p>
+          <!-- <p>Разработка платформы – <a href="https://github.com/pwlgk" target="_blank">P.Geiko</a>.</p> -->
+          <p><NuxtLink to="/contributors">Все участники проекта</NuxtLink></p>
+        </div>
+      </footer>
     </div>
   </div>
 </template>
@@ -202,6 +209,36 @@ nav {
   }
   .app-layout.sidebar-open .mobile-nav-toggle span:nth-child(3) {
     transform: translateY(-7px) rotate(-45deg);
+  }
+}
+.main-footer {
+  padding: 2rem;
+  margin-top: 2rem;
+  border-top: 1px solid var(--border-color);
+  text-align: center;
+}
+.footer-content {
+  max-width: 90ch;
+  margin: 0 auto;
+}
+.main-footer p {
+  margin: 0.5rem 0;
+  font-size: 0.9rem;
+  color: var(--text-color-light);
+}
+.main-footer a {
+  color: var(--text-color);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+}
+.main-footer a:hover {
+  color: var(--link-color);
+}
+@media (max-width: 992px) {
+  .main-footer {
+    padding: 1.5rem;
+    margin-top: 1.5rem;
   }
 }
 </style>
