@@ -33,9 +33,7 @@
       </main>
       <footer class="main-footer">
         <div class="footer-content">
-          <p>© 2025. Все права защищены. Разработка платформы – <a href="https://github.com/pwlgk" target="_blank">P.Geiko</a>.</p>
-          <!-- <p>Разработка платформы – <a href="https://github.com/pwlgk" target="_blank">P.Geiko</a>.</p> -->
-          <p><NuxtLink to="/contributors">Все участники проекта</NuxtLink></p>
+          <p>© 2025. Все права защищены. Разработка платформы – P.Geiko.</p>
         </div>
       </footer>
     </div>
